@@ -84,28 +84,85 @@ const GalleryLandscape=(()=>{
     });resolve();
    },undefined,error=>{console.warn('Nature asset unavailable',name,error);scene.emit('nature-error',{name});resolve();});
   }));
-  // Taller, denser grass nearby; distant tiles use fewer clumps to keep VR light.
-  const blades=[];
-  for(let b=0;b<3;b++){const a=b*Math.PI/3,c=Math.cos(a),q=Math.sin(a),w=.065;blades.push(-w*c,0,-w*q,w*c,0,w*q,.015*c,.32,.015*q);}
-  const grassGeo=new T.BufferGeometry();grassGeo.setAttribute('position',new T.Float32BufferAttribute(blades,3));grassGeo.computeVertexNormals();
-  const grassMat=windMaterial(new T.MeshStandardMaterial({color:'#ffffff',side:T.DoubleSide,roughness:1}),.32,.060);
+  // Curved, tapered blades near the visitor; simple silhouettes farther away.
+  function grassGeometry(detailed){
+   const vertices=[],indices=[],segments=detailed?3:1,blades=detailed?2:3;
+   for(let b=0;b<blades;b++){
+    const angle=b*2.4,c=Math.cos(angle),s=Math.sin(angle),start=vertices.length/3;
+    for(let j=0;j<=segments;j++){
+     const h=j/segments,width=.046*(1-h),curve=.085*h*h;
+     for(const side of [-1,1])vertices.push(c*width*side-s*curve,.38*h,s*width*side+c*curve);
+    }
+    for(let j=0;j<segments;j++){const k=start+j*2;indices.push(k,k+1,k+2);if(j<segments-1)indices.push(k+1,k+3,k+2);}
+   }
+   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(vertices,3));g.setIndex(indices);g.computeVertexNormals();return g;
+  }
+  const grassGeo=grassGeometry(false),nearGrassGeo=grassGeometry(true);
+  const grassVisitor={value:new T.Vector3(0,0,15)},grassLandings={value:Array.from({length:3},()=>new T.Vector4(0,0,0,-100))};let landingSlot=0;
+  const grassMat=new T.MeshStandardMaterial({color:'#ffffff',side:T.DoubleSide,roughness:1});
+  grassMat.onBeforeCompile=shader=>{
+   shader.uniforms.uWindTime=wind;shader.uniforms.uGrassVisitor=grassVisitor;shader.uniforms.uGrassLandings=grassLandings;
+   shader.vertexShader='uniform float uWindTime;\nuniform vec3 uGrassVisitor;\nuniform vec4 uGrassLandings[3];\nvarying float vGrassHeight;\n'+shader.vertexShader;
+   shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+    vGrassHeight=clamp(position.y/.38,0.,1.);
+    float tip=vGrassHeight*vGrassHeight;
+    vec4 bladeBase=vec4(0.,0.,0.,1.);
+    #ifdef USE_INSTANCING
+    bladeBase=instanceMatrix*bladeBase;
+    #endif
+    vec3 grassWorld=(modelMatrix*bladeBase).xyz;
+    float gust=sin(uWindTime*1.15+grassWorld.x*.28+grassWorld.z*.19);
+    float flutter=sin(uWindTime*3.2+grassWorld.x*1.7-grassWorld.z*.9);
+    vec2 push=vec2(.075*gust+.017*flutter,.032*sin(uWindTime*.85+grassWorld.z*.32));
+    vec2 away=grassWorld.xz-uGrassVisitor.xz;
+    float distanceToVisitor=length(away);
+    float pressure=(1.-smoothstep(.12,.78,distanceToVisitor))*(1.-smoothstep(.3,.8,abs(grassWorld.y-uGrassVisitor.y)));
+    push+=away/max(distanceToVisitor,.04)*pressure*.25;
+    float flatten=pressure*.10;
+    for(int i=0;i<3;i++){
+     float age=uWindTime-uGrassLandings[i].w;
+     if(age>=0.&&age<4.){
+      vec2 radial=grassWorld.xz-uGrassLandings[i].xz;
+      float radius=length(radial);
+      float kick=(1.-exp(-age*14.))*exp(-age*1.6);
+      float reach=(1.-smoothstep(.3,1.9,radius))*(1.-smoothstep(.4,1.,abs(grassWorld.y-uGrassLandings[i].y)));
+      push+=radial/max(radius,.04)*kick*reach*.40;
+      flatten+=kick*reach*.10;
+     }
+    }
+    vec3 movement=vec3(push.x,-flatten,push.y)*tip;
+    #ifdef USE_INSTANCING
+    // Convert world-oriented bending back through each clump's yaw and scale.
+    movement=vec3(dot(instanceMatrix[0].xyz,movement)/dot(instanceMatrix[0].xyz,instanceMatrix[0].xyz),dot(instanceMatrix[1].xyz,movement)/dot(instanceMatrix[1].xyz,instanceMatrix[1].xyz),dot(instanceMatrix[2].xyz,movement)/dot(instanceMatrix[2].xyz,instanceMatrix[2].xyz));
+    #endif
+    transformed+=movement;`);
+   shader.fragmentShader='varying float vGrassHeight;\n'+shader.fragmentShader;
+   shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=mix(vec3(.48,.60,.42),vec3(1.08,1.12,.87),smoothstep(0.,1.,vGrassHeight));');
+  };
+  grassMat.customProgramCacheKey=()=> 'interactive-curved-grass-v1';
+  function disturb(point){
+   if(![point.x,point.y,point.z].every(Number.isFinite)||!valid(point))return false;
+   grassLandings.value[landingSlot].set(point.x,ground(point.x,point.z),point.z,wind.value);landingSlot=(landingSlot+1)%grassLandings.value.length;return true;
+  }
   const TILE=12,GRID=56,FAR_GRID=28,RADIUS=4,grassTiles=[],dummy=new T.Object3D(),visitor=new T.Vector3();let grassCell='';
   for(let i=0;i<(RADIUS*2+1)**2;i++){const mesh=new T.InstancedMesh(grassGeo,grassMat,GRID*GRID);mesh.userData.grass=true;mesh.userData.tile=null;group.add(mesh);grassTiles.push(mesh);}
-  function fillGrass(mesh,tx,tz,grid){
+  function fillGrass(mesh,tx,tz,grid,detailed){
+   mesh.geometry=detailed?nearGrassGeo:grassGeo;
    let count=0;const step=TILE/grid;
    for(let ix=0;ix<grid;ix++)for(let iz=0;iz<grid;iz++){
     const gx=tx*grid+ix,gz=tz*grid+iz,h=hash(gx,gz),x=tx*TILE+(ix+.15+hash(gx+871,gz)*.7)*step,z=tz*TILE+(iz+.15+hash(gx,gz+913)*.7)*step;
     if(pathDistance(x,z)<1.13||Math.hypot(x,z)<5.6||Math.abs(x)>196||Math.abs(z)>196)continue;
     dummy.position.set(x,ground(x,z)-.006,z);dummy.rotation.set(0,h*6.28,0);dummy.scale.setScalar(.7+hash(gx+711,gz+22)*.45);dummy.updateMatrix();mesh.setMatrixAt(count,dummy.matrix);mesh.setColorAt(count++,new T.Color().setHSL(.23+hash(gx+99,gz)*.065,.52,.29+h*.16));
    }
-   mesh.count=count;mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;mesh.computeBoundingSphere();mesh.userData.tile=`${tx},${tz},${grid}`;mesh.userData.grid=grid;
+   mesh.count=count;mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;mesh.computeBoundingSphere();mesh.boundingSphere.radius+=.6;mesh.userData.tile=`${tx},${tz},${grid},${detailed?1:0}`;mesh.userData.grid=grid;mesh.userData.detailed=detailed;
   }
   function updateGrass(){
    if(scene.camera)scene.camera.getWorldPosition(visitor);else visitor.set(0,1.65,15);
+   grassVisitor.value.set(visitor.x,ground(visitor.x,visitor.z),visitor.z);
    const cx=Math.floor(visitor.x/TILE),cz=Math.floor(visitor.z/TILE),cell=`${cx},${cz}`;if(cell===grassCell)return;grassCell=cell;
-   const needed=new Map();for(let x=cx-RADIUS;x<=cx+RADIUS;x++)for(let z=cz-RADIUS;z<=cz+RADIUS;z++){const grid=Math.max(Math.abs(x-cx),Math.abs(z-cz))<=2?GRID:FAR_GRID;needed.set(`${x},${z},${grid}`,[x,z,grid]);}
+   const needed=new Map();for(let x=cx-RADIUS;x<=cx+RADIUS;x++)for(let z=cz-RADIUS;z<=cz+RADIUS;z++){const ring=Math.max(Math.abs(x-cx),Math.abs(z-cz)),grid=ring<=2?GRID:FAR_GRID,detailed=ring<=1;needed.set(`${x},${z},${grid},${detailed?1:0}`,[x,z,grid,detailed]);}
    const spare=[];for(const mesh of grassTiles){if(needed.has(mesh.userData.tile))needed.delete(mesh.userData.tile);else spare.push(mesh);}
-   for(const [tx,tz,grid] of needed.values())fillGrass(spare.pop(),tx,tz,grid);
+   for(const [tx,tz,grid,detailed] of needed.values())fillGrass(spare.pop(),tx,tz,grid,detailed);
   }
   updateGrass();
   // Soft contact shadows ground the trees without costly dynamic shadow maps.
@@ -135,7 +192,7 @@ const GalleryLandscape=(()=>{
    }
    return null;
   }
-  const world={ground,valid,clear,ray,group,obstacles,addBlock,tick,animated,ready:Promise.all(loading),pathDistance,treeCount:trees.length,grassTiles,placements};scene.galleryWorld=world;return world;
+  const world={ground,valid,clear,ray,group,obstacles,addBlock,tick,disturb,animated,ready:Promise.all(loading),pathDistance,treeCount:trees.length,grassTiles,placements};scene.galleryWorld=world;return world;
  }
  return {build,height,ground,pathDistance,PATH};
 })();

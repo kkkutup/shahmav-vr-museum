@@ -40,6 +40,7 @@ function projectNote(project,p,w,h,rotation='0 0 0'){
 function action(text,p,fn,w=1.6,rot='0 0 0'){const e=panel(canvas(768,150,(c,W,H)=>{c.fillStyle='#dce3d9';c.fillRect(0,0,W,H);c.fillStyle='#263a31';c.font='bold 42px Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(text,W/2,H/2);}),p,w,.31,rot);e.classList.add('interactive');e.addEventListener('click',fn);e.addEventListener('mouseenter',()=>e.setAttribute('scale','1.035 1.035 1.035'));e.addEventListener('mouseleave',()=>e.setAttribute('scale','1 1 1'));return e;}
 function go(index){current=(index+stops.length)%stops.length;const stop=stops[current];const T=AFRAME.THREE,offset=new T.Vector3();camera.object3D.getWorldPosition(offset);offset.sub(rig.object3D.position);rig.object3D.position.set(stop.pos[0]-offset.x,stop.pos[1],stop.pos[2]-offset.z);
  if(!scene.is('vr-mode')){const look=camera.components['look-controls'];if(look){look.yawObject.rotation.y=T.MathUtils.degToRad(stop.yaw);look.pitchObject.rotation.x=0;}rig.object3D.rotation.y=0;rig.object3D.position.set(...stop.pos);}else{const q=new T.Quaternion();camera.object3D.getWorldQuaternion(q);const yaw=new T.Euler().setFromQuaternion(q,'YXZ').y;rig.object3D.rotation.y+=T.MathUtils.degToRad(stop.yaw)-yaw;const head=new T.Vector3();camera.object3D.getWorldPosition(head);rig.object3D.position.x+=stop.pos[0]-head.x;rig.object3D.position.z+=stop.pos[2]-head.z;}
+ world?.disturb({x:stop.pos[0],y:stop.pos[1],z:stop.pos[2]});
  document.body.classList.add('touring');$('#location').hidden=false;$('#section-number').textContent=$('#progress').textContent=`0${current} / 04`;$('#section-title').textContent=stop.name;$('#info').close();if(current===2)playKestrel();}
 
 function galleryVisible(e){for(let o=e.object3D;o;o=o.parent)if(!o.visible)return false;return true;}
@@ -47,6 +48,7 @@ function teleport(point){
  if(!world?.valid(point))return;
  const head=new AFRAME.THREE.Vector3();camera.object3D.getWorldPosition(head);
  rig.object3D.position.x+=point.x-head.x;rig.object3D.position.z+=point.z-head.z;rig.object3D.position.y=world.ground(point.x,point.z);
+ world.disturb(point);
  blink?.emit('blink');if(guide)guide.object3D.visible=false;
  document.body.classList.add('touring');$('#location').hidden=false;$('#section-title').textContent='Açık alanda';
 }
