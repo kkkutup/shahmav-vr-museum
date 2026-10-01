@@ -1,0 +1,3 @@
+Quaternius — Stylized Nature MegaKit, free Standard edition.
+https://quaternius.com/packs/stylizednaturemegakit.html
+CC0 1.0. Original meshes and textures repackaged as self-contained GLB files.

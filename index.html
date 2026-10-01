@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b29">
+  <meta name="description" content="Ahmet Kutup Tan'ın modüler drone, Kestrel, Simurg ve OpenIPC projelerinden sanal sergi.">
+  <title>Uçuş Atlası — Ahmet Kutup Tan</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23101b29'/%3E%3Cpath d='M7 24V8h5v11h13v5z' fill='%23ef7948'/%3E%3Cpath d='M17 8h8v8h-4v-4h-4z' fill='white'/%3E%3C/svg%3E">
+  <link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./style.css">
+  <script src="./vendor/aframe.min.js" defer></script><script src="./landscape.js" defer></script><script src="./quest-input.js" defer></script><script src="./drone-physics.js" defer></script><script src="./exhibition.js" defer></script><script src="./app.js" defer></script>
+</head>
+<body>
+  <a-scene id="gallery" embedded renderer="antialias: true; colorManagement: true" background="color: #9aa9a4" vr-mode-ui="enabled: false" xr-mode-ui="enabled: false" loading-screen="enabled: false" webxr="referenceSpaceType: local-floor; optionalFeatures: local-floor, bounded-floor" device-orientation-permission-ui="enabled: false">
+    <a-assets timeout="3000">
+      <video id="kestrel-video" src="./assets/kestrel-loop.mp4" preload="metadata" loop muted playsinline></video>
+    </a-assets>
+    <a-entity id="rig" position="0 0 15">
+      <a-camera id="camera" position="0 1.65 0" look-controls="pointerLockEnabled: false; touchEnabled: true" wasd-controls="enabled: false" near="0.05" far="600">
+      </a-camera>
+    </a-entity>
+  </a-scene>
+
+  <header class="chrome topbar">
+    <a class="brand" href="./" aria-label="Sergi başlangıcı"><span class="brand-mark">AT</span><span>AHMET KUTUP TAN<small>PROJE SERGİSİ / 2026</small></span></a>
+    <div class="top-actions"><button id="guide-open" class="quiet">Nasıl gezilir?</button><button id="info-open" class="quiet">Projeler & bilgi</button><span class="tag">QUEST 3 · VR</span></div>
+  </header>
+  <main class="chrome intro" id="intro">
+    <p class="eyebrow">MERSİN ÜNİVERSİTESİ</p>
+    <h1>SHAHMAV</h1>
+    <p class="intro-copy">Önce droneu eline al. Sonra patikayı takip et.</p>
+    <button id="start" class="primary" disabled>Sergi hazırlanıyor…</button>
+    <p class="fine" id="loading" role="status">Galeri ve model yükleniyor.</p>
+  </main>
+  <div class="chrome location" id="location" hidden><span id="section-number">00 / 04</span><strong id="section-title">Sergi girişi</strong></div>
+  <nav class="chrome dock" aria-label="Sergi kontrolleri">
+    <button id="home" title="Giriş noktasına dön" aria-label="Giriş noktasına dön">⌂ <span>Başlangıç</span></button>
+    <div class="separator"></div>
+    <button id="prev" aria-label="Önceki bölüm">‹</button><span id="progress">00 / 04</span><button id="next" aria-label="Sonraki bölüm">›</button>
+    <div class="separator"></div>
+    <button id="vr" class="vr-button" disabled>VR’a gir</button>
+  </nav>
+  <p class="chrome navigation-hint" id="navigation-hint">Bakmak için sürükle · Boş zemine tıklayarak ilerle</p>
+  <div id="toast" role="status" hidden></div>
+  <dialog id="info">
+    <button id="info-close" class="close" aria-label="Bilgi penceresini kapat">×</button>
+    <p class="eyebrow">SERGİ REHBERİ</p><h2>Uçuş Atlası</h2>
+    <p>Ahmet Kutup Tan<br>Mersin Üniversitesi · Bilişim Sistemleri ve Teknolojileri</p>
+    <div class="project-list">
+      <button data-go="1"><span>01</span><div><strong>Drone ve 3D tasarım</strong><small>Gövde, montaj ve modüler parçalar</small></div></button>
+      <button data-go="2"><span>02</span><div><strong>Kestrel MK-1</strong><small>Kamera görüntüsünden uçuş kontrolüne</small></div></button>
+      <button data-go="3"><span>03</span><div><strong>Simurg</strong><small>Algılama modelleri için sentetik veri</small></div></button>
+      <button data-go="4"><span>04</span><div><strong>OpenIPC</strong><small>Bağımsız görüntü aktarım üniteleri</small></div></button>
+    </div>
+    <h3>Quest ile gezinme</h3>
+    <p>Boş zemine doğrult; yeşil halka görününce tetiğe bas. Ya da çubuğu ileri tutup eğri çizgiyle yer seç, sonra bırak. Turuncu işaretli yerlere geçilemez. Çubuğu sağa veya sola iterek dön. Sol kumandada X başlangıca, sağ kumandada A sonraki projeye götürür.</p>
+    <h3>Droneu eline al</h3><p>Küçük standın üzerindeki 10 inç modeli işaret et veya elini yaklaştır. Yandaki kavrama tuşunu basılı tutarak al; bileğini çevirerek incele. Bırakınca model yerçekimiyle düşer; bulunduğu yerden tekrar alabilirsin. Standın yanındaki “Yeniden göster” düğmesi modeli yerine getirip büyük montajı tekrar ayırır.</p>
+    <h3>Bilgisayar ve telefon</h3><p>Bakmak için sürükle, boş zemine tıklayarak ilerle. 10 inç modele tıklamak onu döndürür. Oklarla bölüm değiştirebilirsin; Home başlangıca döner.</p>
+    <h3>Çevrimdışı hazırlık</h3><p>İnternet açıkken aşağıdaki düğmeyi kullan. İndirme tamamlandıktan sonra aynı tarayıcıdaki bu adres çevrimdışı açılabilir. Sergiden önce Quest’te interneti kapatıp yeniden açarak dene; tarayıcı verileri silinirse tekrar indirmek gerekir.</p>
+    <button id="offline" class="secondary">Sergiyi bu cihaza kaydet</button><p id="offline-status" class="fine" role="status">Çevrimdışı kopya henüz kontrol edilmedi.</p>
+    <h3>İçerik notu</h3><p>10 inç X8 modelleri R09 CAD montajından geliyor. Motor, pervane, kamera ve batarya geometrileri yerleşim referansıdır. Küçük modeli aldığında büyük montajın parçaları birleşir.</p><p>Ağaçlar ve bitkiler: <a href="https://quaternius.com/packs/stylizednaturemegakit.html" target="_blank" rel="noopener">Quaternius, Stylized Nature MegaKit</a> (CC0). Kestrel videosu ve ekran görüntüsü gerçek denemelerden, Simurg görselleri önceki veri üretimlerinden.</p>
+    <p class="source-links"><a href="https://github.com/kkkutup/kestrel-mk1" target="_blank" rel="noopener">Kestrel kaynakları</a><a href="https://github.com/kkkutup/Simurg" target="_blank" rel="noopener">Simurg kaynakları</a><a href="https://github.com/kkkutup" target="_blank" rel="noopener">GitHub portfolyosu</a></p>
+  </dialog>
+  <noscript>Bu sanal serginin çalışması için JavaScript açık olmalıdır.</noscript>
+</body>
+</html>
