@@ -10,6 +10,7 @@
   <script src="./vendor/aframe.min.js" defer></script><script src="./landscape.js" defer></script><script src="./quest-input.js" defer></script><script src="./drone-physics.js" defer></script><script src="./exhibition.js" defer></script><script src="./app.js" defer></script>
 </head>
 <body>
+  <audio id="ambient-music" src="./assets/ambient-calm.mp3" preload="none" loop></audio>
   <a-scene id="gallery" embedded renderer="antialias: true; colorManagement: true" background="color: #9aa9a4" vr-mode-ui="enabled: false" xr-mode-ui="enabled: false" loading-screen="enabled: false" webxr="referenceSpaceType: local-floor; optionalFeatures: local-floor, bounded-floor" device-orientation-permission-ui="enabled: false">
     <a-assets timeout="3000">
       <video id="kestrel-video" src="./assets/kestrel-loop.mp4" preload="metadata" loop muted playsinline></video>
@@ -55,9 +56,11 @@
     <p>Boş zemine doğrult; yeşil halka görününce tetiğe bas. Ya da çubuğu ileri tutup eğri çizgiyle yer seç, sonra bırak. Turuncu işaretli yerlere geçilemez. Çubuğu sağa veya sola iterek dön. Sol kumandada X başlangıca, sağ kumandada A sonraki projeye götürür.</p>
     <h3>Droneu eline al</h3><p>Küçük standın üzerindeki 10 inç modeli işaret et veya elini yaklaştır. Yandaki kavrama tuşunu basılı tutarak al; bileğini çevirerek incele. Bırakınca model yerçekimiyle düşer; bulunduğu yerden tekrar alabilirsin. Standın yanındaki “Yeniden göster” düğmesi modeli yerine getirip büyük montajı tekrar ayırır.</p>
     <h3>Bilgisayar ve telefon</h3><p>Bakmak için sürükle, boş zemine tıklayarak ilerle. 10 inç modele tıklamak onu döndürür. Oklarla bölüm değiştirebilirsin; Home başlangıca döner.</p>
+    <h3>Fon müziği</h3><button id="music-toggle" class="secondary" aria-pressed="true">Müziği kapat</button>
     <h3>Çevrimdışı hazırlık</h3><p>İnternet açıkken aşağıdaki düğmeyi kullan. İndirme tamamlandıktan sonra aynı tarayıcıdaki bu adres çevrimdışı açılabilir. Sergiden önce Quest’te interneti kapatıp yeniden açarak dene; tarayıcı verileri silinirse tekrar indirmek gerekir.</p>
     <button id="offline" class="secondary">Sergiyi bu cihaza kaydet</button><p id="offline-status" class="fine" role="status">Çevrimdışı kopya henüz kontrol edilmedi.</p>
     <h3>İçerik notu</h3><p>10 inç X8 modelleri R09 CAD montajından geliyor. Motor, pervane, kamera ve batarya geometrileri yerleşim referansıdır. Küçük modeli aldığında büyük montajın parçaları birleşir.</p><p>Ağaçlar ve bitkiler: <a href="https://quaternius.com/packs/stylizednaturemegakit.html" target="_blank" rel="noopener">Quaternius, Stylized Nature MegaKit</a> (CC0). Kestrel videosu ve ekran görüntüsü gerçek denemelerden, Simurg görselleri önceki veri üretimlerinden.</p>
+    <p class="fine">DIY fotoğrafları: <a href="https://github.com/OpenIPC/wiki/blob/master/en/archive/fpv-step-by-step-guide.md" target="_blank" rel="noopener">OpenIPC wiki</a> (GPL-3.0); bunlar topluluktan örnek kurulumlardır. Menzil, anten ve bağlantı koşullarına bağlıdır; <a href="https://bumply.github.io/IREC-2026/video-payload.html" target="_blank" rel="noopener">örnek sistem bilgisi</a>. Fon müziği: <a href="https://opengameart.org/content/calm-loop" target="_blank" rel="noopener">Calm Loop — wipics</a> (CC0). <a href="./assets/MEDIA-SOURCES.txt" target="_blank">Kaynaklar ve lisanslar</a></p>
     <p class="source-links"><a href="https://github.com/kkkutup/kestrel-mk1" target="_blank" rel="noopener">Kestrel kaynakları</a><a href="https://github.com/kkkutup/Simurg" target="_blank" rel="noopener">Simurg kaynakları</a><a href="https://github.com/kkkutup" target="_blank" rel="noopener">GitHub portfolyosu</a></p>
   </dialog>
   <noscript>Bu sanal serginin çalışması için JavaScript açık olmalıdır.</noscript>

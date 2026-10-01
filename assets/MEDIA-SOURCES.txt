@@ -1,0 +1,12 @@
+OpenIPC photos: OpenIPC wiki contributors, GPL-3.0. Unmodified source images.
+https://github.com/OpenIPC/wiki/blob/master/en/archive/fpv-step-by-step-guide.md
+https://github.com/OpenIPC/wiki/blob/master/images/sbs-wiring-mess.jpg
+https://github.com/OpenIPC/wiki/blob/master/images/sbs-ground-wifi.JPG
+License: openipc/LICENSE.txt
+
+Music: Calm Loop / Relaxing.mp3 by wipics, CC0 / Public Domain.
+https://opengameart.org/content/calm-loop
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Range reference (configuration-dependent, not a measured result for this project):
+https://bumply.github.io/IREC-2026/video-payload.html

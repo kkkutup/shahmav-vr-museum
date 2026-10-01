@@ -91,20 +91,22 @@ function buildExhibition(){
  function assemble(){state.from=state.amount;state.target=0;state.elapsed=0;}
  rig.addEventListener('model-grabbed',assemble);
  // Kestrel: the flight recording and workstation screenshot share one bay.
- const kestrel=station(-11,-8,25,'Kestrel · uçuş denemeleri','02','#bd5438',7.6);
+ const kestrel=station(-11,-8,25,'Kestrel MK-1','02','#bd5438',7.6);
  const movie=hanging(3.2,3.2*608/832,-1.4,1.86,kestrel);
  const screen=el('a-video',{src:'#kestrel-video',width:3.2,height:3.2*608/832,position:'0 0 .014',class:'interactive'},movie);screen.addEventListener('click',toggleKestrel);
  label('Ekrana dokun: oynat / durdur','0 -1.37 .02',3,.16,34,palette.paper,'0 0 0',movie);
  hanging(2,1.25,2.1,2.77,kestrel,'./assets/kestrel-workspace.png');
  note(projects[1],2.1,1.06,2.7,1.75,kestrel);
  // Simurg: a small outdoor print display, with the context beside the images.
- const simurg=station(0,-17,0,'Simurg · eğitim görüntüleri','03','#386bae',7.2);
+ const simurg=station(0,-17,0,'Simurg','03','#386bae',7.2);
  const samples=[['consumer.jpg','Tüketici tipi'],['fpv.jpg','FPV'],['fixed-wing.jpg','Sabit kanat'],['mixed.jpg','Karma sahne']];
  samples.forEach(([file,title],i)=>{const x=i%2?.6:-1.2,y=i<2?2.45:1.14;const frame=hanging(1.6,.9,x,y,simurg,`./assets/simurg/${file}`);label(title,'0 -.6 .02',1.6,.15,40,palette.paper,'0 0 0',frame);});
  note(projects[2],2.6,1.86,1.75,2.1,simurg);
- const openipc=station(11,-8,-25,'OpenIPC · görüntü aktarımı','04','#16836c',5.5);
+ const openipc=station(11,-8,-25,'OpenIPC','04','#16836c',5.5);
  note(projects[3],-.7,1.82,2.8,2.2,openipc);
- hanging(1.45,2.03,1.7,1.85,openipc,'./assets/poster.jpg');
+ hanging(1.65,1.65*1027/2411,1.7,2.6,openipc,'./assets/openipc/diy-assembly.jpg');
+ hanging(1.65,1.65*3376/6000,1.7,1.4,openipc,'./assets/openipc/diy-system.jpg');
+ label('DIY örnekleri · OpenIPC wiki','1.7 .7 .02',1.8,.13,32,palette.paper,'0 0 0',openipc);
  // Discreet numbered route markers reinforce the path and the flag sequence.
  for(const [x,z,text,yaw] of [[-6,2,'02  Kestrel',35],[-7,-11,'03  Simurg',45],[7,-11,'04  OpenIPC',-45],[6,2,'01  Drone',-35]]){
   const sign=el('a-entity',{position:`${x} 0 ${z}`,rotation:`0 ${yaw} 0`});box('0 .48 0',.06,.96,.06,palette.wood,sign);box('0 .93 0',1.65,.32,.07,palette.ink,sign);label(text,'0 .93 .042',1.55,.22,48,palette.paper,'0 0 0',sign);world.addBlock(x,z,.15,1.15);
