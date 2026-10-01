@@ -69,7 +69,7 @@ function buildGuide(){
 function turn(angle){const T=AFRAME.THREE,before=new T.Vector3(),after=new T.Vector3();camera.object3D.getWorldPosition(before);rig.object3D.rotation.y+=angle;rig.object3D.updateMatrixWorld(true);camera.object3D.getWorldPosition(after);rig.object3D.position.x+=before.x-after.x;rig.object3D.position.z+=before.z-after.z;}
 function toggleRotate(){rotating=!rotating;toast(rotating?'Model döndürme açık.':'Model döndürme kapalı.');}
 const ambientMusic=$('#ambient-music');let musicEnabled=true;
-ambientMusic.volume=.10;
+ambientMusic.volume=.07;
 function playMusic(){if(musicEnabled&&!document.hidden&&ambientMusic.paused)ambientMusic.play().catch(()=>{});}
 function toggleMusic(){musicEnabled=!musicEnabled;$('#music-toggle').textContent=musicEnabled?'Müziği kapat':'Müziği aç';$('#music-toggle').setAttribute('aria-pressed',String(musicEnabled));if(musicEnabled)playMusic();else ambientMusic.pause();}
 document.addEventListener('pointerdown',playMusic);

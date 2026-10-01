@@ -43,13 +43,13 @@ function buildExhibition(){
   state.flags.push({mesh,rest:geometry.attributes.position.array.slice(),phase:x*.2+z*.1});world.addBlock(x,z,.12,4.8);
  }
  // Broad walnut plinth, inset teal band, and a smaller matching pickup stand.
- shadow(0,0,2.8);
- el('a-cylinder',{position:'0 .15 0',radius:2.55,height:.3,'segments-radial':64,material:`color: ${palette.ink}; roughness: .75`});
- for(let i=0;i<64;i++){const a=i*Math.PI/32;box(`${Math.sin(a)*2.49} .35 ${Math.cos(a)*2.49}`,.13,.30,.11,palette.wood).object3D.rotation.y=a;}
- el('a-cylinder',{position:'0 .515 0',radius:2.56,height:.05,'segments-radial':64,material:`color: ${palette.gold}; metalness: .35; roughness: .5`});
- el('a-cylinder',{position:'0 .555 0',radius:2.5,height:.04,'segments-radial':64,material:`color: ${palette.edge}; roughness: .85`});
- world.addBlock(0,0,2.7,2.7);
- mainModel=addModel('./assets/drone-10inch-modules.glb','0 1.33 0',2.65,'frame-model');
+ shadow(0,0,3.2);
+ el('a-cylinder',{position:'0 .25 0',radius:2.95,height:.5,'segments-radial':64,material:`color: ${palette.ink}; roughness: .75`});
+ for(let i=0;i<64;i++){const a=i*Math.PI/32;box(`${Math.sin(a)*2.89} .71 ${Math.cos(a)*2.89}`,.13,.42,.11,palette.wood).object3D.rotation.y=a;}
+ el('a-cylinder',{position:'0 .945 0',radius:2.96,height:.05,'segments-radial':64,material:`color: ${palette.gold}; metalness: .35; roughness: .5`});
+ el('a-cylinder',{position:'0 .99 0',radius:2.9,height:.04,'segments-radial':64,material:`color: ${palette.edge}; roughness: .85`});
+ world.addBlock(0,0,3.1,3.2);
+ mainModel=addModel('./assets/drone-10inch-modules.glb','0 1.70 0',3.25,'frame-model');
  mainModel.addEventListener('model-loaded',()=>{
   const root=mainModel.getObject3D('mesh');
   root.traverse(n=>{if(!n.isMesh)return;
@@ -61,30 +61,30 @@ function buildExhibition(){
   });
 
  });
- label('Modüler drone','0 .33 2.565',2.9,.3,70,palette.paper);
- label('Küçük modeli eline al. Parçaların birleşmesini izle.','0 .11 2.57',3.8,.15,30,palette.paper);
+ label('Modüler drone','0 .68 2.965',2.9,.3,70,palette.paper);
+ label('Küçük modeli eline al. Parçaların birleşmesini izle.','0 .41 2.97',3.8,.15,30,palette.paper);
  const droneNote=el('a-entity',{position:'-3.65 0 2.2',rotation:'0 24 0'});
  for(const x of [-.88,.88])box(`${x} 1.5 -.16`,.10,3,.10,palette.wood,droneNote);
  box('0 2.98 -.16',2.36,.12,.14,palette.wood,droneNote);
  note(projects[0],0,1.65,2.1,1.7,droneNote);
  for(const x of [-.88,0,.88])world.addBlock(-3.65+x*Math.cos(24*Math.PI/180),2.2-x*Math.sin(24*Math.PI/180),.4,3.1);
- const small=el('a-entity',{position:'0 0 4.15'});
+ const small=el('a-entity',{position:'0 0 4.15',scale:'.9 .9 .9'});
  shadow(0,0,.9,small);box('0 .42 0',1.15,.84,.85,palette.ink,small);
  for(const x of [-.48,.48])box(`${x} .44 0`,.09,.88,.87,palette.wood,small);
  box('0 .91 0',1.32,.10,1.02,palette.gold,small);box('0 .98 0',1.24,.04,.94,palette.edge,small);
- fullModel=addModel('./assets/drone-10inch-light.glb','0 1.21 4.15',.86,'drone-10inch');fullModel.classList.add('grabbable','interactive');
+ fullModel=addModel('./assets/drone-10inch-light.glb','0 1.11 4.15',.86,'drone-10inch');fullModel.classList.add('grabbable','interactive');
  fullModel.addEventListener('model-loaded',()=>{
   // A low-cost pickup volume includes thin arms and propellers.
   const model=fullModel.getObject3D('mesh');model.updateWorldMatrix(true,true);const bounds=new T.Box3().setFromObject(model),size=bounds.getSize(new T.Vector3()).divide(fullModel.object3D.scale);
   model.traverse(n=>{if(n.isMesh)n.raycast=()=>{};});
   const proxy=new T.Mesh(new T.BoxGeometry(size.x,size.y+.10,size.z),new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,colorWrite:false}));proxy.el=fullModel;fullModel.object3D.add(proxy);
-  scene.galleryDynamics.register(fullModel,{x:0,y:1.21,z:4.15});
+  scene.galleryDynamics.register(fullModel,{x:0,y:1.11,z:4.15});
  });
  fullModel.addEventListener('click',()=>{if(!scene.is('vr-mode')){assemble();fullModel.object3D.rotation.y+=Math.PI/6;}});
- label('10 İNÇ X8','0 .68 4.586',.95,.17,50,palette.paper);
- label('Yan tuşu sıkıp tut','0 .41 4.587',.95,.13,35,palette.paper);
- scene.galleryDynamics.surfaces.push({x:0,z:4.15,h:1,rx:.65,rz:.52},{x:0,z:0,h:.58,r:2.55});
- world.addBlock(0,4.15,.7,1.3);
+ label('10 İNÇ X8','0 .612 4.543',.855,.153,50,palette.paper);
+ label('Yan tuşu sıkıp tut','0 .369 4.544',.855,.117,35,palette.paper);
+ scene.galleryDynamics.surfaces.push({x:0,z:4.15,h:.9,rx:.585,rz:.468},{x:0,z:0,h:1.01,r:2.9});
+ world.addBlock(0,4.15,.63,1.2);
  banner(-4.6,5.3,'01','Modüler drone',palette.teal,12);banner(4.3,5.3,'01','Tasarımdan uçuşa','#bc573a',-12);
  action('Yeniden göster','2.05 .93 3.45',()=>{state.from=state.amount;state.target=1;state.elapsed=0;scene.galleryDynamics.reset(fullModel);},1.6,'0 -18 0');
  action('Kısa rehber','-2.05 .93 3.45',showGuide,1.6,'0 18 0');
@@ -114,7 +114,7 @@ function buildExhibition(){
  return {tick(t,dt){
   state.elapsed+=dt;const progress=Math.min(1,state.elapsed/2.15),smooth=progress*progress*(3-2*progress);state.amount=state.from+(state.target-state.from)*smooth;
   state.explosion.value=state.amount;
-  if(mainModel){mainModel.object3D.position.y=1.41-state.amount*.08;mainModel.object3D.rotation.y+=dt*Math.PI/30;}
+  if(mainModel){mainModel.object3D.position.y=1.80-state.amount*.10;mainModel.object3D.rotation.y+=dt*Math.PI/30;}
   for(const flag of state.flags){const p=flag.mesh.geometry.attributes.position;for(let i=0;i<p.count;i++){const x=flag.rest[i*3],y=flag.rest[i*3+1],free=(1.125-y)/2.25;p.setZ(i,Math.sin(t*2.2+x*4.5+y*2+flag.phase)*.11*free+Math.sin(t*1.1+flag.phase)*.06*free);}p.needsUpdate=true;flag.mesh.geometry.computeVertexNormals();}
  },assemble,state};
 }
